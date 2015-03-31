@@ -27,6 +27,10 @@ crop.factory('cropAreaCircle', ['cropArea', function(CropArea) {
 
   CropAreaCircle.prototype = new CropArea();
 
+  CropAreaCircle.prototype.setRatio = function(ratio) {
+    CropArea.prototype.setRatio.call(this, 1);
+  };
+
   CropAreaCircle.prototype._calcCirclePerimeterCoords=function(angleDegrees) {
     var hSize=this._size/2;
     var angleRadians=angleDegrees * (Math.PI / 180),

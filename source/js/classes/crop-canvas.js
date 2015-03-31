@@ -99,27 +99,27 @@ crop.factory('cropCanvas', [function() {
 
     /* Crop Area */
 
-    this.drawCropArea=function(image, centerCoords, size, fnDrawClipPath) {
+    this.drawCropArea=function(image, centerCoords, size, ratio, fnDrawClipPath) {
       var xRatio=image.width/ctx.canvas.width,
           yRatio=image.height/ctx.canvas.height,
           xLeft=centerCoords[0]-size/2,
-          yTop=centerCoords[1]-size/2;
+          yTop=centerCoords[1]-size/ratio/2;
 
       ctx.save();
       ctx.strokeStyle = colors.areaOutline;
       ctx.lineWidth = 2;
       ctx.beginPath();
-      fnDrawClipPath(ctx, centerCoords, size);
+      fnDrawClipPath(ctx, centerCoords, size, ratio);
       ctx.stroke();
       ctx.clip();
 
       // draw part of original image
       if (size > 0) {
-          ctx.drawImage(image, xLeft*xRatio, yTop*yRatio, size*xRatio, size*yRatio, xLeft, yTop, size, size);
+          ctx.drawImage(image, xLeft*xRatio, yTop*yRatio, size*xRatio, size*yRatio/ratio, xLeft, yTop, size, size/ratio);
       }
 
       ctx.beginPath();
-      fnDrawClipPath(ctx, centerCoords, size);
+      fnDrawClipPath(ctx, centerCoords, size, ratio);
       ctx.stroke();
       ctx.clip();
 

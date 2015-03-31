@@ -13,6 +13,7 @@ crop.factory('cropArea', ['cropCanvas', function(CropCanvas) {
     this._x = 0;
     this._y = 0;
     this._size = 200;
+    this._ratio = 1;
   };
 
   /* GETTERS/SETTERS */
@@ -48,6 +49,14 @@ crop.factory('cropArea', ['cropCanvas', function(CropCanvas) {
     this._dontDragOutside();
   };
 
+  CropArea.prototype.getRatio = function () {
+    return this._ratio;
+  };
+  CropArea.prototype.setRatio = function (ratio) {
+    this._ratio = ratio;
+    this._dontDragOutside();
+  };
+
   CropArea.prototype.getMinSize = function () {
     return this._minSize;
   };
@@ -59,21 +68,23 @@ crop.factory('cropArea', ['cropCanvas', function(CropCanvas) {
 
   /* FUNCTIONS */
   CropArea.prototype._dontDragOutside=function() {
-    var h=this._ctx.canvas.height,
-        w=this._ctx.canvas.width;
-    if(this._size>w) { this._size=w; }
-    if(this._size>h) { this._size=h; }
-    if(this._x<this._size/2) { this._x=this._size/2; }
-    if(this._x>w-this._size/2) { this._x=w-this._size/2; }
-    if(this._y<this._size/2) { this._y=this._size/2; }
-    if(this._y>h-this._size/2) { this._y=h-this._size/2; }
+    var h = this._ctx.canvas.height,
+        w = this._ctx.canvas.width;
+    if (this._size > w) { this._size = w; }
+    if (this._size / this._ratio > h) { this._size = h * this._ratio; }
+    var hWidth = this._size / 2,
+        hHeight = hWidth / this._ratio;
+    if (this._x < hWidth) { this._x = hWidth; }
+    if (this._x > w - hWidth) { this._x = w - hWidth; }
+    if (this._y < hHeight) { this._y = hHeight; }
+    if (this._y > h - hHeight) { this._y = h - hHeight; }
   };
 
   CropArea.prototype._drawArea=function() {};
 
   CropArea.prototype.draw=function() {
     // draw crop area
-    this._cropCanvas.drawCropArea(this._image,[this._x,this._y],this._size,this._drawArea);
+    this._cropCanvas.drawCropArea(this._image,[this._x,this._y],this._size,this._ratio,this._drawArea);
   };
 
   CropArea.prototype.processMouseMove=function() {};

@@ -81,6 +81,7 @@
 
   <div ng-if="enableCrop" class="cropArea" ng-class="{'big':size=='big', 'medium':size=='medium', 'small':size=='small'}">
     <img-crop image="imageDataURI"
+              crop="imageCrop"
               result-image="$parent.resImageDataURI"
               change-on-fly="changeOnFly"
               area-type="{{type}}"
@@ -88,7 +89,7 @@
               result-image-format="{{resImgFormat}}"
               result-image-quality="resImgQuality"
               result-image-size="resImgSize"
-              on-change="onChange($dataURI)"
+              on-change="onChange($dataURI, $crop)"
               on-load-begin="onLoadBegin()"
               on-load-done="onLoadDone()"
               on-load-error="onLoadError()"
@@ -106,17 +107,18 @@
   <script type="text/javascript">
     angular.module('app', ['ngImgCrop'])
       .controller('Ctrl', function($scope) {
-        $scope.size='small';
-        $scope.type='circle';
+        $scope.size='medium';
+        $scope.type='rectangle';
         $scope.imageDataURI='';
         $scope.resImageDataURI='';
         $scope.resImgFormat='image/png';
         $scope.resImgQuality=1;
         $scope.selMinSize=100;
         $scope.resImgSize=200;
+        $scope.imageCrop={x:0.1,y:0.1,w:0.8,h:0.8};
         //$scope.aspectRatio=1.2;
-        $scope.onChange=function($dataURI) {
-          console.log('onChange fired');
+        $scope.onChange=function($dataURI, $crop) {
+          console.log('onChange fired, $dataURI=' + $dataURI + '", $crop=' + JSON.stringify($crop) );
         };
         $scope.onLoadBegin=function() {
           console.log('onLoadBegin fired');

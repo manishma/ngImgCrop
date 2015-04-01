@@ -5,7 +5,7 @@
  * Copyright (c) 2015 Alex Kaul
  * License: MIT
  *
- * Generated at Tuesday, March 31st, 2015, 12:38:27 PM
+ * Generated at Wednesday, April 1st, 2015, 11:06:47 AM
  */
 (function() {
 'use strict';
@@ -41,6 +41,9 @@ crop.factory('cropAreaCircle', ['cropArea', function(CropArea) {
 
   CropAreaCircle.prototype.setRatio = function(ratio) {
     CropArea.prototype.setRatio.call(this, 1);
+  };
+  CropAreaCircle.prototype.setCrop = function(x, y, size, ratio) {
+    CropArea.prototype.setCrop.call(this, x, y, size, 1);
   };
 
   CropAreaCircle.prototype._calcCirclePerimeterCoords=function(angleDegrees) {
@@ -412,6 +415,9 @@ crop.factory('cropAreaSquare', ['cropArea', function(CropArea) {
   CropAreaSquare.prototype.setRatio = function(ratio) {
     CropArea.prototype.setRatio.call(this, 1);
   };
+  CropAreaSquare.prototype.setCrop = function(x, y, size, ratio) {
+    CropArea.prototype.setCrop.call(this, x, y, size, 1);
+  };
 
   CropAreaSquare.prototype._calcSquareCorners=function() {
     var hSize=this._size/2;
@@ -653,6 +659,14 @@ crop.factory('cropArea', ['cropCanvas', function(CropCanvas) {
   };
   CropArea.prototype.setRatio = function (ratio) {
     this._ratio = ratio;
+    this._dontDragOutside();
+  };
+
+  CropArea.prototype.setCrop = function (x, y, size, ratio) {
+    this._size = size;
+    this._ratio = ratio;
+    this._x = x;
+    this._y = y;
     this._dontDragOutside();
   };
 
@@ -1630,6 +1644,7 @@ crop.factory('cropHost', ['$document', 'cropAreaCircle', 'cropAreaSquare', 'crop
     // Object Pointers
     var ctx=null,
         image=null,
+        _crop = null,
         theArea=null;
 
     // Dimensions
@@ -1693,10 +1708,19 @@ crop.factory('cropHost', ['$document', 'cropAreaCircle', 'cropAreaSquare', 'crop
         }
         elCanvas.prop('width',canvasDims[0]).prop('height',canvasDims[1]).css({'margin-left': -canvasDims[0]/2+'px', 'margin-top': -canvasDims[1]/2+'px'});
 
-        theArea.setX(ctx.canvas.width/2);
-        theArea.setY(ctx.canvas.height/2);
-        theArea.setSize(Math.min(200, ctx.canvas.width/2, ctx.canvas.height/2));
-        theArea.setRatio(imageRatio);
+        if(_crop) {
+          var left = ctx.canvas.width * _crop.x,
+              top = ctx.canvas.height * _crop.y,
+              width = ctx.canvas.width * _crop.w,
+              height = ctx.canvas.height * _crop.h;
+
+          theArea.setCrop(left + width / 2, top + height / 2, width, width / height);
+        } else {
+          theArea.setX(ctx.canvas.width / 2);
+          theArea.setY(ctx.canvas.height / 2);
+          theArea.setSize(Math.min(200, ctx.canvas.width / 2, ctx.canvas.height / 2));
+          theArea.setRatio(imageRatio);
+        }
       } else {
         elCanvas.prop('width',0).prop('height',0).css({'margin-top': 0});
       }
@@ -1764,6 +1788,25 @@ crop.factory('cropHost', ['$document', 'cropAreaCircle', 'cropAreaSquare', 'crop
         theArea.processMouseUp(pageX-offset.left, pageY-offset.top);
         drawScene();
       }
+    };
+
+    this.getCrop = function() {
+      var width = theArea.getSize(),
+          height = theArea.getSize() / theArea.getRatio(),
+          left = theArea.getX() - width / 2,
+          top = theArea.getY() - height / 2;
+
+      return {
+        x: left / ctx.canvas.width,
+        y: top / ctx.canvas.height,
+        w: width / ctx.canvas.width,
+        h: height / ctx.canvas.height
+      }
+    };
+
+    this.setCrop = function(crop) {
+      _crop = crop;
+      resetCropHost();
     };
 
     this.getResultImageDataURI=function() {
@@ -2011,6 +2054,7 @@ crop.directive('imgCrop', ['$timeout', 'cropHost', 'cropPubSub', function($timeo
     restrict: 'E',
     scope: {
       image: '=',
+      crop: '=',
       resultImage: '=',
 
       changeOnFly: '=',
@@ -2046,7 +2090,7 @@ crop.directive('imgCrop', ['$timeout', 'cropHost', 'cropPubSub', function($timeo
           if(angular.isDefined(scope.resultImage)) {
             scope.resultImage=resultImage;
           }
-          scope.onChange({$dataURI: scope.resultImage});
+          scope.onChange({$dataURI: resultImage, $crop: cropHost.getCrop()});
         }
       };
 
@@ -2103,6 +2147,10 @@ crop.directive('imgCrop', ['$timeout', 'cropHost', 'cropPubSub', function($timeo
       });
       scope.$watch('resultImageQuality',function(){
         cropHost.setResultImageQuality(scope.resultImageQuality);
+        updateResultImage(scope);
+      });
+      scope.$watch('crop',function(){
+        cropHost.setCrop(scope.crop);
         updateResultImage(scope);
       });
 

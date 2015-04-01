@@ -30,6 +30,9 @@ crop.factory('cropAreaSquare', ['cropArea', function(CropArea) {
   CropAreaSquare.prototype.setRatio = function(ratio) {
     CropArea.prototype.setRatio.call(this, 1);
   };
+  CropAreaSquare.prototype.setCrop = function(x, y, size, ratio) {
+    CropArea.prototype.setCrop.call(this, x, y, size, 1);
+  };
 
   CropAreaSquare.prototype._calcSquareCorners=function() {
     var hSize=this._size/2;

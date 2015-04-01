@@ -28,6 +28,7 @@ crop.factory('cropHost', ['$document', 'cropAreaCircle', 'cropAreaSquare', 'crop
     // Object Pointers
     var ctx=null,
         image=null,
+        _crop = null,
         theArea=null;
 
     // Dimensions
@@ -91,10 +92,19 @@ crop.factory('cropHost', ['$document', 'cropAreaCircle', 'cropAreaSquare', 'crop
         }
         elCanvas.prop('width',canvasDims[0]).prop('height',canvasDims[1]).css({'margin-left': -canvasDims[0]/2+'px', 'margin-top': -canvasDims[1]/2+'px'});
 
-        theArea.setX(ctx.canvas.width/2);
-        theArea.setY(ctx.canvas.height/2);
-        theArea.setSize(Math.min(200, ctx.canvas.width/2, ctx.canvas.height/2));
-        theArea.setRatio(imageRatio);
+        if(_crop) {
+          var left = ctx.canvas.width * _crop.x,
+              top = ctx.canvas.height * _crop.y,
+              width = ctx.canvas.width * _crop.w,
+              height = ctx.canvas.height * _crop.h;
+
+          theArea.setCrop(left + width / 2, top + height / 2, width, width / height);
+        } else {
+          theArea.setX(ctx.canvas.width / 2);
+          theArea.setY(ctx.canvas.height / 2);
+          theArea.setSize(Math.min(200, ctx.canvas.width / 2, ctx.canvas.height / 2));
+          theArea.setRatio(imageRatio);
+        }
       } else {
         elCanvas.prop('width',0).prop('height',0).css({'margin-top': 0});
       }
@@ -164,6 +174,24 @@ crop.factory('cropHost', ['$document', 'cropAreaCircle', 'cropAreaSquare', 'crop
       }
     };
 
+    this.getCrop = function() {
+      var width = theArea.getSize(),
+          height = theArea.getSize() / theArea.getRatio(),
+          left = theArea.getX() - width / 2,
+          top = theArea.getY() - height / 2;
+
+      return {
+        x: left / ctx.canvas.width,
+        y: top / ctx.canvas.height,
+        w: width / ctx.canvas.width,
+        h: height / ctx.canvas.height
+      }
+    };
+
+    this.setCrop = function(crop) {
+      _crop = crop;
+      resetCropHost();
+    };
 
     this.getResultImageDataURI=function() {
       var temp_canvas = angular.element('<canvas></canvas>')[0],

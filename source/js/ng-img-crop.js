@@ -5,6 +5,7 @@ crop.directive('imgCrop', ['$timeout', 'cropHost', 'cropPubSub', function($timeo
     restrict: 'E',
     scope: {
       image: '=',
+      crop: '=',
       resultImage: '=',
 
       changeOnFly: '=',
@@ -40,7 +41,7 @@ crop.directive('imgCrop', ['$timeout', 'cropHost', 'cropPubSub', function($timeo
           if(angular.isDefined(scope.resultImage)) {
             scope.resultImage=resultImage;
           }
-          scope.onChange({$dataURI: scope.resultImage});
+          scope.onChange({$dataURI: resultImage, $crop: cropHost.getCrop()});
         }
       };
 
@@ -97,6 +98,10 @@ crop.directive('imgCrop', ['$timeout', 'cropHost', 'cropPubSub', function($timeo
       });
       scope.$watch('resultImageQuality',function(){
         cropHost.setResultImageQuality(scope.resultImageQuality);
+        updateResultImage(scope);
+      });
+      scope.$watch('crop',function(){
+        cropHost.setCrop(scope.crop);
         updateResultImage(scope);
       });
 

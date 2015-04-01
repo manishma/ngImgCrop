@@ -57,6 +57,14 @@ crop.factory('cropArea', ['cropCanvas', function(CropCanvas) {
     this._dontDragOutside();
   };
 
+  CropArea.prototype.setCrop = function (x, y, size, ratio) {
+    this._size = size;
+    this._ratio = ratio;
+    this._x = x;
+    this._y = y;
+    this._dontDragOutside();
+  };
+
   CropArea.prototype.getMinSize = function () {
     return this._minSize;
   };

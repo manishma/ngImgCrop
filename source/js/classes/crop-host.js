@@ -175,6 +175,10 @@ crop.factory('cropHost', ['$document', 'cropAreaCircle', 'cropAreaSquare', 'crop
     };
 
     this.getCrop = function() {
+
+      if(image == null) {
+        return;
+      }
       var width = theArea.getSize(),
           height = theArea.getSize() / theArea.getRatio(),
           left = theArea.getX() - width / 2,

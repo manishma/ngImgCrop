@@ -39,7 +39,7 @@ crop.directive('imgCrop', ['$timeout', 'cropHost', 'cropPubSub', function($timeo
         if(storedResultImage!==resultImage) {
           storedResultImage=resultImage;
           if(angular.isDefined(scope.resultImage)) {
-            scope.resultImage=resultImage;
+            scope.resultImage = resultImage || '';
           }
           scope.onChange({$dataURI: resultImage, $crop: cropHost.getCrop()});
         }

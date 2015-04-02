@@ -114,11 +114,11 @@
         $scope.resImgFormat='image/png';
         $scope.resImgQuality=1;
         $scope.selMinSize=100;
-        $scope.resImgSize=200;
+        $scope.resImgSize=0;
         $scope.imageCrop={x:0.1,y:0.1,w:0.8,h:0.8};
         //$scope.aspectRatio=1.2;
         $scope.onChange=function($dataURI, $crop) {
-          console.log('onChange fired, $dataURI=' + $dataURI + '", $crop=' + JSON.stringify($crop) );
+          console.log('onChange fired, $dataURI=' + $dataURI + ', $crop=' + JSON.stringify($crop) );
         };
         $scope.onLoadBegin=function() {
           console.log('onLoadBegin fired');

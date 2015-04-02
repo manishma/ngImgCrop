@@ -83,7 +83,7 @@ gulp.task('scripts', function(){
       Config.paths.source.js + '/classes/*.js',
       Config.paths.source.js + '/ng-img-crop.js'
     ])
-    .pipe(concat(pkg.name+'.js', {
+    .pipe(concat('ng-img-crop.js', {
       separator: '\n\n',
       process: function(src) {
         // Remove all 'use strict'; from the code and

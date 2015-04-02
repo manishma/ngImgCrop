@@ -35,8 +35,8 @@ crop.factory('cropHost', ['$document', 'cropAreaCircle', 'cropAreaSquare', 'crop
     var minCanvasDims=[100,100],
         maxCanvasDims=[300,300];
 
-    // Result Image size
-    var resImgSize=200;
+    // Result Image size, 0 - use original size
+    var resImgSize = 0;
 
     // Result Image type
     var resImgFormat='image/png';
@@ -176,7 +176,7 @@ crop.factory('cropHost', ['$document', 'cropAreaCircle', 'cropAreaSquare', 'crop
 
     this.getCrop = function() {
 
-      if(image == null) {
+      if(!image) {
         return;
       }
       var width = theArea.getSize(),
@@ -198,25 +198,32 @@ crop.factory('cropHost', ['$document', 'cropAreaCircle', 'cropAreaSquare', 'crop
     };
 
     this.getResultImageDataURI=function() {
+      if (!image) {
+        return;
+      }
+
       var temp_canvas = angular.element('<canvas></canvas>')[0],
           temp_ctx = temp_canvas.getContext('2d'),
           resImgWidth,
-          resImgHeight;
-      if(theArea.getRatio() >= 1) {
-        resImgWidth = resImgSize;
-        resImgHeight = resImgWidth/theArea.getRatio();
+          resImgHeight,
+          xRatio = image.width / ctx.canvas.width,
+          yRatio = image.height / ctx.canvas.height;
+      if (resImgSize) {
+        if (theArea.getRatio() >= 1) {
+          resImgWidth = resImgSize;
+          resImgHeight = resImgWidth / theArea.getRatio();
+        } else {
+          resImgHeight = resImgSize;
+          resImgWidth = resImgHeight * theArea.getRatio();
+        }
       } else {
-        resImgHeight = resImgSize;
-        resImgWidth = resImgHeight * theArea.getRatio();
+        resImgWidth = theArea.getSize() * xRatio;
+        resImgHeight = theArea.getSize() * yRatio / theArea.getRatio();
       }
       temp_canvas.width = resImgWidth;
       temp_canvas.height = resImgHeight;
-      if(image!==null){
-        var xRatio=image.width/ctx.canvas.width,
-            yRatio=image.height/ctx.canvas.height;
-        temp_ctx.drawImage(image, (theArea.getX()-theArea.getSize()/2)*xRatio, (theArea.getY()-theArea.getSize()/theArea.getRatio()/2)*yRatio, theArea.getSize()*xRatio, theArea.getSize()*yRatio/theArea.getRatio(), 0, 0, resImgWidth, resImgHeight);
-      }
-      if (resImgQuality!==null ){
+      temp_ctx.drawImage(image, (theArea.getX() - theArea.getSize() / 2) * xRatio, (theArea.getY() - theArea.getSize() / theArea.getRatio() / 2) * yRatio, theArea.getSize() * xRatio, theArea.getSize() * yRatio / theArea.getRatio(), 0, 0, resImgWidth, resImgHeight);
+      if (resImgQuality !== null) {
         return temp_canvas.toDataURL(resImgFormat, resImgQuality);
       }
       return temp_canvas.toDataURL(resImgFormat);

@@ -5,7 +5,7 @@
  * Copyright (c) 2015 Alex Kaul
  * License: MIT
  *
- * Generated at Sunday, April 5th, 2015, 2:58:07 PM
+ * Generated at Sunday, April 5th, 2015, 3:13:05 PM
  */
 (function() {
 'use strict';
@@ -315,7 +315,6 @@ crop.factory('cropAreaRectangle', ['cropArea', function(CropArea) {
           maxHeigth = this._ctx.canvas.height,
           newWidth = Math.min(maxWidth, Math.max(minWidth, iFX + this._posResizeStartSize)),
           newHight = Math.min(maxHeigth, Math.max(minHeigth, iFY + this._posResizeStartSize / this._posResizeStartRatio));
-      console.log({newWidth: newWidth, newHight: newHight});
       this._size = newWidth;
       if (!this._fixedRatio) {
         this._ratio = newWidth / newHight;

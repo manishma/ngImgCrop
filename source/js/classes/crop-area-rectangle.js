@@ -145,7 +145,6 @@ crop.factory('cropAreaRectangle', ['cropArea', function(CropArea) {
           maxHeigth = this._ctx.canvas.height,
           newWidth = Math.min(maxWidth, Math.max(minWidth, iFX + this._posResizeStartSize)),
           newHight = Math.min(maxHeigth, Math.max(minHeigth, iFY + this._posResizeStartSize / this._posResizeStartRatio));
-      console.log({newWidth: newWidth, newHight: newHight});
       this._size = newWidth;
       if (!this._fixedRatio) {
         this._ratio = newWidth / newHight;

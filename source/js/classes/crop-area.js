@@ -14,6 +14,7 @@ crop.factory('cropArea', ['cropCanvas', function(CropCanvas) {
     this._y = 0;
     this._size = 200;
     this._ratio = 1;
+    this._fixedRatio = false;
   };
 
   /* GETTERS/SETTERS */
@@ -63,6 +64,10 @@ crop.factory('cropArea', ['cropCanvas', function(CropCanvas) {
     this._x = x;
     this._y = y;
     this._dontDragOutside();
+  };
+
+  CropArea.prototype.setFixedRatio = function (fixedRatio) {
+    this._fixedRatio = fixedRatio;
   };
 
   CropArea.prototype.getMinSize = function () {

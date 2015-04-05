@@ -130,11 +130,26 @@ crop.factory('cropAreaRectangle', ['cropArea', function(CropArea) {
       var wasWidth = this._size,
           wasHeight = this._size / this._ratio,
           iFX = (mouseCurX - this._posResizeStartX) * xMulti,
-          iFY = (mouseCurY - this._posResizeStartY) * yMulti,
-          newWidth = Math.max(this._minSize, iFX + this._posResizeStartSize),
-          newHight = Math.max(this._minSize, iFY + this._posResizeStartSize / this._posResizeStartRatio);
+          iFY = (mouseCurY - this._posResizeStartY) * yMulti;
+
+      if(this._fixedRatio) {
+        if (iFX / this._ratio > iFY) {
+          iFX = iFY * this._ratio;
+        } else {
+          iFY = iFX / this._ratio;
+        }
+      }
+      var minWidth = this._minSize,
+          minHeigth = this._fixedRatio ? minWidth/this._ratio : this._minSize,
+          maxWidth = this._ctx.canvas.width,
+          maxHeigth = this._ctx.canvas.height,
+          newWidth = Math.min(maxWidth, Math.max(minWidth, iFX + this._posResizeStartSize)),
+          newHight = Math.min(maxHeigth, Math.max(minHeigth, iFY + this._posResizeStartSize / this._posResizeStartRatio));
+      console.log({newWidth: newWidth, newHight: newHight});
       this._size = newWidth;
-      this._ratio = newWidth / newHight;
+      if (!this._fixedRatio) {
+        this._ratio = newWidth / newHight;
+      }
       this._x += xMulti * (newWidth - wasWidth) / 2;
       this._y += yMulti * (newHight - wasHeight) / 2;
       this._resizeCtrlIsHover = this._resizeCtrlIsDragging;

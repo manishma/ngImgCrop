@@ -29,6 +29,7 @@ crop.factory('cropHost', ['$document', 'cropAreaCircle', 'cropAreaSquare', 'crop
     var ctx=null,
         image=null,
         _crop = null,
+        _aspectRatio = 0, // 0 - no fixed ration
         theArea=null;
 
     // Dimensions
@@ -98,13 +99,15 @@ crop.factory('cropHost', ['$document', 'cropAreaCircle', 'cropAreaSquare', 'crop
               width = ctx.canvas.width * _crop.w,
               height = ctx.canvas.height * _crop.h;
 
-          theArea.setCrop(left + width / 2, top + height / 2, width, width / height);
+          theArea.setCrop(left + width / 2, top + height / 2, width, _aspectRatio || width / height);
         } else {
           theArea.setX(ctx.canvas.width / 2);
           theArea.setY(ctx.canvas.height / 2);
           theArea.setSize(Math.min(200, ctx.canvas.width / 2, ctx.canvas.height / 2));
-          theArea.setRatio(imageRatio);
+          theArea.setRatio(_aspectRatio || imageRatio);
         }
+
+        theArea.setFixedRatio(!!_aspectRatio);
       } else {
         elCanvas.prop('width',0).prop('height',0).css({'margin-top': 0});
       }
@@ -195,6 +198,14 @@ crop.factory('cropHost', ['$document', 'cropAreaCircle', 'cropAreaSquare', 'crop
     this.setCrop = function(crop) {
       _crop = crop;
       resetCropHost();
+    };
+
+    this.setAspectRatio = function (aspectRatio) {
+      aspectRatio = parseFloat(aspectRatio);
+      if(!isNaN(aspectRatio)) {
+        _aspectRatio = aspectRatio;
+        resetCropHost();
+      }
     };
 
     this.getResultImageDataURI=function() {
@@ -374,9 +385,10 @@ crop.factory('cropHost', ['$document', 'cropAreaCircle', 'cropAreaSquare', 'crop
       theArea = new AreaClass(ctx, events);
       theArea.setMinSize(curMinSize);
       theArea.setSize(curSize);
-      theArea.setRatio(curRatio);
+      theArea.setRatio(_aspectRatio || curRatio);
       theArea.setX(curX);
       theArea.setY(curY);
+      theArea.setFixedRatio(!!_aspectRatio);
 
       // resetCropHost();
       if(image!==null) {

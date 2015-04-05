@@ -45,16 +45,14 @@
   <div>
     <label><input type="checkbox" ng-model="changeOnFly" /> Change On Fly</label>
   </div>
-  <!--
   <div>
-    <label>Aspect Ratio: <input type="text" ng-model="aspectRatio" /></label>
+    <label>Aspect Ratio: <input type="text" ng-model="aspectRatio" /> 0 - no fixed aspect ratio</label>
   </div>
-  -->
   <div>
     <label>Area Min Size (Size = Width = Height): <input type="text" ng-model="selMinSize" /></label>
   </div>
   <div>
-    <label>Result Image Size (Size = Width = Height): <input type="text" ng-model="resImgSize" /></label>
+    <label>Result Image Size (Size = Width = Height): <input type="text" ng-model="resImgSize" /> 0 - original crop size</label>
   </div>
   <div>
     Result Image Format:
@@ -85,6 +83,7 @@
               result-image="$parent.resImageDataURI"
               change-on-fly="changeOnFly"
               area-type="{{type}}"
+              aspect-ratio="aspectRatio"
               area-min-size="selMinSize"
               result-image-format="{{resImgFormat}}"
               result-image-quality="resImgQuality"
@@ -94,7 +93,6 @@
               on-load-done="onLoadDone()"
               on-load-error="onLoadError()"
     ></img-crop>
-              <!--aspect-ratio="aspectRatio"-->
   </div>
 
   <div style="text-align:center">
@@ -116,7 +114,7 @@
         $scope.selMinSize=100;
         $scope.resImgSize=0;
         $scope.imageCrop={x:0.1,y:0.1,w:0.8,h:0.8};
-        //$scope.aspectRatio=1.2;
+        $scope.aspectRatio=0;
         $scope.onChange=function($dataURI, $crop) {
           console.log('onChange fired, $dataURI=' + $dataURI + ', $crop=' + JSON.stringify($crop) );
         };

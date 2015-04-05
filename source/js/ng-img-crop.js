@@ -72,7 +72,10 @@ crop.directive('imgCrop', ['$timeout', 'cropHost', 'cropPubSub', function($timeo
             updateResultImage(scope);
           }
         }))
-        .on('area-move-end area-resize-end image-updated', fnSafeApply(function(scope){
+        .on('area-move-end area-resize-end', fnSafeApply(function(scope){
+          scope.crop = cropHost.getCrop();
+        }))
+        .on('image-updated', fnSafeApply(function(scope){
           updateResultImage(scope);
         }));
 
